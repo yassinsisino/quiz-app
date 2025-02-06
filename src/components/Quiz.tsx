@@ -3,8 +3,8 @@ import React, { useState, useCallback } from 'react'
 import QuestionTimer from './QuestionTimer'
 
 import DUMMY_QUESTIONS from '../data/questions'
-import quizCompletedImg from '../assets/quiz-complete.png'
 import Answers from './Answers'
+import Summary from './Summary'
 
 
 interface IProps { }
@@ -40,12 +40,7 @@ const Quiz: React.FC<IProps> = () => {
   }, [handleSelectAnswer])
 
   if (quizIsOver) {
-    return (
-      <div id='summary'>
-        <img src={quizCompletedImg} alt=" quiz completed" />
-        <h2>Quiz Completed!</h2>
-      </div>
-    )
+    return <Summary answers={userAnswers} />
   }
 
   return (
