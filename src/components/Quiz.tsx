@@ -4,6 +4,7 @@ import QuestionTimer from './QuestionTimer'
 
 import DUMMY_QUESTIONS from '../data/questions'
 import quizCompletedImg from '../assets/quiz-complete.png'
+import Answers from './Answers'
 
 
 interface IProps { }
@@ -11,10 +12,8 @@ interface IProps { }
 const Quiz: React.FC<IProps> = () => {
   const [userAnswers, setUserAnswers] = useState<string[]>([])
   const [answerState, setAnswerState] = useState<string>('')
-  const activeQuestionIndex = userAnswers.length
-
-
-  const quizIsOver = activeQuestionIndex === DUMMY_QUESTIONS.length
+  const activeQuestionIndex = answerState === '' ? userAnswers.length : userAnswers.length - 1
+  const quizIsOver = activeQuestionIndex === DUMMY_QUESTIONS.length - 1
 
 
   const handleSelectAnswer = useCallback((selectedAnswer: string) => {
@@ -27,9 +26,14 @@ const Quiz: React.FC<IProps> = () => {
         setAnswerState('correct')
       else
         setAnswerState('wrong')
+      setTimeout(() => {
+        setAnswerState('')
+      }, 2000)
     }, 1000)
 
-  },   [activeQuestionIndex])
+
+
+  }, [activeQuestionIndex])
 
   const handleSkipAnswer = useCallback(() => {
     handleSelectAnswer('')
@@ -44,27 +48,22 @@ const Quiz: React.FC<IProps> = () => {
     )
   }
 
-  const shuffledAnswers = [...DUMMY_QUESTIONS[activeQuestionIndex].answers]
-  shuffledAnswers.sort(() => Math.random() - 0.5)
-
   return (
     <div id='quiz'>
       <div id='question'>
         <QuestionTimer
-          key={activeQuestionIndex}
+          key={`questionTimer-${activeQuestionIndex}`}
           timeout={10000}
           onTimeout={handleSkipAnswer}
         />
         <h2>{DUMMY_QUESTIONS[activeQuestionIndex].text}</h2>
-        <ul id='answers'>
-          {shuffledAnswers.map((answer, index) => (
-            <li key={index} className='answer'>
-              <button onClick={() => handleSelectAnswer(answer)}>
-                {answer}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <Answers
+          key={`answer-${activeQuestionIndex}`}
+          answerState={answerState}
+          answers={DUMMY_QUESTIONS[activeQuestionIndex].answers}
+          userAnswers={userAnswers}
+          onSelect={handleSelectAnswer}
+        />
       </div>
     </div>
   )
